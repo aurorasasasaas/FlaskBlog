@@ -49,13 +49,25 @@ class SearchableMixin:
     def after_commit(cls, session):
         for obj in session._changes['add']:
             if isinstance(obj, SearchableMixin):
-                add_to_index(obj.__tablename__, obj)
+                try:
+                    if current_app.elasticsearch:
+                        add_to_index(obj.__tablename__, obj)
+                except Exception as e:
+                    print(f"Elasticsearch add_to_index error (add): {e}")
         for obj in session._changes['update']:
             if isinstance(obj, SearchableMixin):
-                add_to_index(obj.__tablename__, obj)
+                try:
+                    if current_app.elasticsearch:
+                        add_to_index(obj.__tablename__, obj)
+                except Exception as e:
+                    print(f"Elasticsearch add_to_index error (update): {e}")
         for obj in session._changes['delete']:
             if isinstance(obj, SearchableMixin):
-                remove_from_index(obj.__tablename__, obj)
+                try:
+                    if current_app.elasticsearch:
+                        remove_from_index(obj.__tablename__, obj)
+                except Exception as e:
+                    print(f"Elasticsearch remove_from_index error (delete): {e}")
         session._changes = None
 
     @classmethod
