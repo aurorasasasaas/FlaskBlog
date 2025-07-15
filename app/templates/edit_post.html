@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>{{ _('Edit Post') }}</h1>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.post.label(class="form-label") }}
+      {{ form.post(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.category.label(class="form-label") }}
+      {{ form.category(class="form-select") }}
+    </div>
+    <div class="mb-3" id="custom-category-field" style="display: {% if form.category.data == 'other' %}block{% else %}none{% endif %};">
+      {{ form.custom_category.label(class="form-label") }}
+      {{ form.custom_category(class="form-control") }}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const categorySelect = document.querySelector('select[name="category"]');
+      const customCategory = document.getElementById('custom-category-field');
+      categorySelect.addEventListener('change', function() {
+        if (this.value === 'other') {
+          customCategory.style.display = 'block';
+        } else {
+          customCategory.style.display = 'none';
+        }
+      });
+    });
+  </script>
+{% endblock %}

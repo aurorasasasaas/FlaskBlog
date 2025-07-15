@@ -3,7 +3,12 @@
 {% block content %}
     <table class="table table-hover">
         <tr>
-            <td width="256px"><img src="{{ user.avatar(256) }}"></td>
+            <td width="256px">{% if user.profile_pic %}
+                <img src="{{ url_for('static', filename='profile_pics/' + user.profile_pic) }}" width="256" height="256">
+            {% else %}
+                <img src="{{ user.avatar(256) }}">
+            {% endif %}
+            </td>            
             <td>
                 <h1>{{ _('User') }}: {{ user.username }}</h1>
                 {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
@@ -13,9 +18,13 @@
                 <p>{{ _('%(count)d followers', count=user.followers_count()) }}, {{ _('%(count)d following', count=user.following_count()) }}</p>
                 {% if user == current_user %}
                 <p><a href="{{ url_for('main.edit_profile') }}">{{ _('Edit your profile') }}</a></p>
-                {% if not current_user.get_task_in_progress('export_posts') %}
-                <p><a href="{{ url_for('main.export_posts') }}">{{ _('Export your posts') }}</a></p>
+                <p><strong>Status:</strong> {{ user.status or 'N/A' }}</p>
+                <p><strong>School:</strong> {{ user.school or 'N/A' }}</p>
+                <p><strong>About:</strong> {{ user.about_me or 'N/A' }}</p>
+                {% if user.social_link %}
+                  <p><a href="{{ user.social_link }}" target="_blank">Follow me</a></p>
                 {% endif %}
+                
                 {% elif not current_user.is_following(user) %}
                 <p>
                     <form action="{{ url_for('main.follow', username=user.username) }}" method="post">

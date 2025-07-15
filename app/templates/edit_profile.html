@@ -1,7 +1,32 @@
 {% extends "base.html" %}
-{% import "bootstrap_wtf.html" as wtf %}
 
 {% block content %}
-    <h1>{{ _('Edit Profile') }}</h1>
-    {{ wtf.quick_form(form) }}
+  <h1>Edit your profile</h1>
+  <form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+      <strong>Username:</strong> {{ current_user.username }}
+    </p>
+    <p>
+      {{ form.status.label }}<br>
+      {{ form.status(class="form-control") }}
+    </p>
+    <p>
+      {{ form.school.label }}<br>
+      {{ form.school(class="form-control") }}
+    </p>
+    <p>
+      {{ form.about_me.label }}<br>
+      {{ form.about_me(class="form-control") }}
+    </p>
+    <p>
+      {{ form.social_link.label }}<br>
+      {{ form.social_link(class="form-control") }}
+    </p>
+    <p>{{ form.submit(class="btn btn-primary") }}</p>
+  </form>
+  <hr>
+  <blockquote>
+    <em>{{ random_quote }}</em>
+  </blockquote>
 {% endblock %}

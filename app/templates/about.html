@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 900px;">
+  <div class="card-body">
+    <h1 class="card-title text-primary mb-4">{{ _('About StudyBlog') }}</h1>
+    
+    <h4>📚 What is StudyBlog?</h4>
+    <p>
+      StudyBlog is an interactive blog and social learning platform designed for students who want to stay focused, learn faster, and connect with others.
+      Here you can:
+    </p>
+    <ul>
+      <li>Post study notes, questions, and answers</li>
+      <li>Join discussions without distractions</li>
+      <li>Explore topics in an organized, motivating space</li>
+      <li>Support each other and share progress</li>
+    </ul>
+    <p>
+      Unlike traditional social media, StudyBlog keeps you away from irrelevant noise and helps you grow academically.
+    </p>
+
+    <hr>
+
+    <h4>🙋 About Me</h4>
+    <div class="d-flex align-items-center mb-3">
+      <img src="{{ url_for('static', filename='profile_pics/baddie2.jpg') }}" 
+           alt="Your photo" class="rounded-circle me-3" width="100" height="100">
+      <p class="mb-0">
+        Hi! I’m the creator of StudyBlog—a student who believes learning should feel inspiring, not draining. 
+        I built this project to make studying collaborative, fun, and truly distraction-free. 💖
+      </p>
+    </div>
+    <p>
+      If you’d like to connect or share feedback, feel free to <a href="{{ url_for('main.explore') }}">explore posts</a> or reach out.
+    </p>
+
+    <hr>
+
+    <h4>🔒 Privacy Policy & Guidelines</h4>
+    <p>Please read carefully what’s allowed and what’s not:</p>
+    <ul>
+      <li><strong>Allowed:</strong> Sharing study materials, respectful discussions, helping others learn.</li>
+      <li><strong>Not allowed:</strong> Plagiarism, harassment, spam, sharing personal information without consent.</li>
+      <li>By using StudyBlog, you agree to keep this a safe and positive space.</li>
+    </ul>
+    <form id="privacyForm">
+      <div class="form-check my-3">
+        <input class="form-check-input" type="checkbox" value="" id="agreeCheck" required>
+        <label class="form-check-label" for="agreeCheck">
+          I have read and agree to the privacy policy.
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary">Continue to Home</button>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('privacyForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  window.location.href = "{{ url_for('main.index') }}";
+});
+</script>
+{% endblock %}

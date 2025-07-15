@@ -6,26 +6,30 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_bcrypt import Bcrypt
 from flask_moment import Moment
-from flask_babel import Babel, lazy_gettext as _l
+from flask_babel import Babel  # added
+
 from elasticsearch import Elasticsearch
 from redis import Redis
 import rq
 from config import Config
 
 
-def get_locale():
-    return request.accept_languages.best_match(current_app.config['LANGUAGES'])
-
-
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
 login.login_view = 'auth.login'
-login.login_message = _l('Please log in to access this page.')
+
 mail = Mail()
 moment = Moment()
-babel = Babel()
+bcrypt = Bcrypt()
+babel = Babel()  # added
+
+
+def get_locale():
+    # fallback to 'en' if LANGUAGES not set
+    return request.accept_languages.best_match(current_app.config.get('LANGUAGES', ['en']))
 
 
 def create_app(config_class=Config):
@@ -37,9 +41,15 @@ def create_app(config_class=Config):
     login.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
-    babel.init_app(app, locale_selector=get_locale)
-    app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
-        if app.config['ELASTICSEARCH_URL'] else None
+    bcrypt.init_app(app)
+    babel.init_app(app)  # initialize Babel
+
+    app.elasticsearch = Elasticsearch(
+        [app.config['ELASTICSEARCH_URL']],
+        verify_certs=False,
+        ssl_show_warn=False
+    ) if app.config['ELASTICSEARCH_URL'] else None
+
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('microblog-tasks', connection=app.redis)
 
@@ -94,6 +104,3 @@ def create_app(config_class=Config):
         app.logger.info('Microblog startup')
 
     return app
-
-
-from app import models
