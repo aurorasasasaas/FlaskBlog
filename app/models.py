@@ -15,10 +15,19 @@ from app import db, login
 from app.search import add_to_index, remove_from_index, query_index
 
 
+
 class SearchableMixin:
     @classmethod
     def search(cls, expression, page, per_page):
-        ids, total = query_index(cls.__tablename__, expression, page, per_page)
+        try:
+            ids, total = query_index(cls.__tablename__, expression, page, per_page)
+        except Exception as e:
+            # Fallback to basic DB filtering by matching the expression in a text field
+            query = db.session.query(cls).filter(cls.body.ilike(f'%{expression}%'))  # for Post or adjust for your model
+            total = query.count()
+            results = query.offset((page-1)*per_page).limit(per_page).all()
+            return results, total
+
         if total == 0:
             return [], 0
         when = [(id_, i) for i, id_ in enumerate(ids)]
@@ -26,6 +35,7 @@ class SearchableMixin:
             db.case(*when, value=cls.id)
         )
         return db.session.scalars(query), total
+
 
     @classmethod
     def before_commit(cls, session):
